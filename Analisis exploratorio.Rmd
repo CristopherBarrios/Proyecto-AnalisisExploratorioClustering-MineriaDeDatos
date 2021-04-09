@@ -1,0 +1,172 @@
+---
+title: "Proyecto"
+author: "Josué Sagastume, Cristopher Barrios, Diego Ruiz"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r, echo=FALSE}
+library(cluster) #Para calcular la silueta
+library(e1071)#para cmeans
+library(mclust) #mixtures of gaussians
+library(fpc) #para hacer el plotcluster
+library(NbClust) #Para determinar el n?mero de clusters ?ptimo
+library(factoextra) #Para hacer gr?ficos bonitos de clustering
+library(rpart)
+library(caret)
+library(tree)
+library(rpart.plot)
+library(ggplot2)
+library(randomForest)
+library(tidyverse)
+library(DataExplorer)
+library(reshape2)
+library(grid)
+library(corrplot)
+```
+
+```{r echo=FALSE}
+load("data.RData")
+```
+
+# Analisis exploratorio
+
+
+### Datos
+```{r echo=FALSE}
+head(grupo_edad_esposo_segun_grupo_edad_esposa %>% filter(Edad.de.la.esposa != "Todas las edades") %>% select(-2))
+
+head(mes_registro_segun_departamento_registro %>% filter(Departamento.de.registro != "Todos los departamentos") %>% select(-2))
+
+print("mes_registro_segun_departamento_registro")
+unique(mes_registro_segun_departamento_registro$Departamento.de.registro)
+
+print("grupo_edad_esposo_segun_grupo_edad_esposa")
+unique(grupo_edad_esposo_segun_grupo_edad_esposa$Edad.de.la.esposa)
+
+```
+
+### Estadistica descriptiva
+
+#### Divorcios por mes de registro segun departamento de registro
+
+```{r echo=FALSE}
+resumen1 <- mes_registro_segun_departamento_registro %>% filter(Departamento.de.registro != "Todos los departamentos") %>% select(3:14)
+summary(resumen1)
+```
+#### Divorcios por grupo de edad del esposo segun grupo de edad de la esposa
+
+```{r echo=FALSE}
+resumen2 <- grupo_edad_esposo_segun_grupo_edad_esposa %>% filter(Edad.de.la.esposa != "Todas las edades") %>% select(3:14)
+summary(resumen2)
+```
+
+
+### Graficos exploratorios
+
+```{r echo=FALSE}
+mes_registro_segun_departamento_registro_todos_los_registros <- mes_registro_segun_departamento_registro %>% filter(Departamento.de.registro == "Todos los departamentos") %>% select(3:14)
+
+barplot(as.matrix(mes_registro_segun_departamento_registro_todos_los_registros),main="Divorcios por mes de registro", beside=TRUE, las=2)
+```
+
+```{r echo=FALSE}
+mes_registro_segun_departamento_registro_por_departamento <- mes_registro_segun_departamento_registro %>% filter(Departamento.de.registro != "Todos los departamentos") %>% group_by(Departamento.de.registro) %>% summarise(sum = sum(Total))
+
+View(mes_registro_segun_departamento_registro_por_departamento)
+```
+
+```{r echo=FALSE}
+grupo_edad_esposo_segun_grupo_edad_esposa_todos_los_registros <- grupo_edad_esposo_segun_grupo_edad_esposa %>% filter(Edad.de.la.esposa == "Todas las edades") %>% select(3:11)
+
+barplot(as.matrix(grupo_edad_esposo_segun_grupo_edad_esposa_todos_los_registros), main="Divorcios por grupo de edad del esposo", beside=TRUE, las=2)
+```
+
+##### Correlacion de Divorcios por mes de registro segun departamento de registro
+
+```{r echo=FALSE}
+mes_registro_segun_departamento_registro_limpio <- mes_registro_segun_departamento_registro %>% filter(Departamento.de.registro != "Todos los departamentos") %>% select(3:14)
+
+frstselect <- subset(mes_registro_segun_departamento_registro_limpio)
+M <- cor(frstselect)
+
+corrplot(M, method = "shade", order = "hclust", number.cex = .5,
+         addCoef.col = "white", tl.col = "black")
+```
+
+##### Correlacion de divorcios por grupo de edad del esposo segun grupo de edad de la esposa
+
+```{r echo=FALSE}
+grupo_edad_esposo_segun_grupo_edad_esposa_limpio <- grupo_edad_esposo_segun_grupo_edad_esposa %>% filter(Edad.de.la.esposa != "Todas las edades") %>% select(3:13)
+
+scndselect <- subset(grupo_edad_esposo_segun_grupo_edad_esposa_limpio)
+M2 <- cor(scndselect)
+corrplot(M2, method = "shade", order = "hclust", number.cex = .5,
+         addCoef.col = "white", addrect=2, tl.col = "black")
+```
+
+### Clustering
+
+#### Metodo de kmeans
+
+Divorcios por mes de registro segun departamento de registro
+```{r echo=FALSE}
+km_mes<-kmeans(mes_registro_segun_departamento_registro_limpio,3,iter.max = 100)
+
+wss <- (nrow(mes_registro_segun_departamento_registro_limpio)-1)*sum(apply(mes_registro_segun_departamento_registro_limpio,2,var))
+
+for (i in 2:10)
+  wss[1] <- sum(kmeans(mes_registro_segun_departamento_registro_limpio, centers = i)$withinss)
+
+fviz_cluster(km_mes, data = mes_registro_segun_departamento_registro_limpio, geom = "point", ellipse.type = "norm")
+```
+
+Divorcios por grupo de edad del esposo segun grupo de edad de la esposa
+```{r echo=FALSE}
+km_edad <- kmeans(grupo_edad_esposo_segun_grupo_edad_esposa_limpio,3,iter.max = 100)
+
+wss <- (nrow(grupo_edad_esposo_segun_grupo_edad_esposa_limpio)-1)*sum(apply(grupo_edad_esposo_segun_grupo_edad_esposa_limpio,2,var))
+
+for (i in 2:10)
+  wss[1] <- sum(kmeans(grupo_edad_esposo_segun_grupo_edad_esposa_limpio, centers = i)$withinss)
+
+fviz_cluster(km_edad, data = grupo_edad_esposo_segun_grupo_edad_esposa_limpio, geom = "point", ellipse.type = "norm")
+```
+
+
+#### Cual es la mejor cantidad de clusters
+##### Divorcios por mes de registro segun departamento de registro
+```{r echo=FALSE}
+nb1 <- NbClust(mes_registro_segun_departamento_registro_limpio, distance = "euclidean", min.nc = 2, max.nc = 10, method = "complete", index ="all")
+
+wss <- (nrow(mes_registro_segun_departamento_registro_limpio)-1)*sum(apply(mes_registro_segun_departamento_registro_limpio,2,var))
+
+for (i in 2:10) 
+  wss[i] <- sum(kmeans(mes_registro_segun_departamento_registro_limpio, centers=i)$withinss)
+
+plot(1:10, wss, type="b", xlab="Number of Clusters",  ylab="Within groups sum of squares")
+```
+
+##### Divorcios por grupo de edad del esposo segun grupo de edad de la esposa
+```{r echo=FALSE}
+nb2 <- NbClust(grupo_edad_esposo_segun_grupo_edad_esposa_limpio, distance = "euclidean", min.nc = 2, max.nc = 10, method = "complete", index ="all")
+
+wss <- (nrow(grupo_edad_esposo_segun_grupo_edad_esposa_limpio)-1)*sum(apply(grupo_edad_esposo_segun_grupo_edad_esposa_limpio,2,var))
+
+for (i in 2:10) 
+  wss[i] <- sum(kmeans(grupo_edad_esposo_segun_grupo_edad_esposa_limpio, centers=i)$withinss)
+
+plot(1:10, wss, type="b", xlab="Number of Clusters",  ylab="Within groups sum of squares")
+```
+
+Silueta para kmeans
+```{r echo=FALSE}
+silkm<-silhouette(km_edad$cluster,dist(grupo_edad_esposo_segun_grupo_edad_esposa_limpio))
+mean(silkm[,3]) #0.55, no es la mejor particiÃ³n pero no estÃ¡ mal
+
+```
+
+

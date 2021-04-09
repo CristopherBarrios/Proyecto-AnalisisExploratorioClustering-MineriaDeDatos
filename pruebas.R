@@ -1,3 +1,5 @@
+setwd("C:/Users/josue/Desktop/PROYECTO/Proyecto-AnalisisExploratorioClustering-MineriaDeDatos")
+
 library(readxl)
 library(tidyverse)
 
@@ -107,3 +109,8 @@ mes_registro_segun_departamento_registro <- rbind(mes_registro_segun_departament
                                                   mes_registro_segun_departamento_registro_2018,
                                                   mes_registro_segun_departamento_registro_2019)
 
+
+
+save(grupo_edad_esposo_segun_grupo_edad_esposa,
+     mes_registro_segun_departamento_registro,
+     file= "data.RData")
