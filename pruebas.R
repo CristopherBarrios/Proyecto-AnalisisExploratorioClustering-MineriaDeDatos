@@ -114,3 +114,28 @@ mes_registro_segun_departamento_registro <- rbind(mes_registro_segun_departament
 save(grupo_edad_esposo_segun_grupo_edad_esposa,
      mes_registro_segun_departamento_registro,
      file= "data.RData")
+
+
+# PARTE 2
+# RESULTADOS DEL PROYECTO
+
+summary(grupo_edad_esposo_segun_grupo_edad_esposa)
+
+datosDivorcio <- grupo_edad_esposo_segun_grupo_edad_esposa %>% filter(Edad.de.la.esposa != "Todas las edades") %>% select(3:14)
+summary(datosDivorcio)
+View(datosDivorcio)
+
+datosDivorcio$clasificacion <- ifelse()
+
+
+path = getwd()
+
+path
+
+
+
+
+
+
+
+
