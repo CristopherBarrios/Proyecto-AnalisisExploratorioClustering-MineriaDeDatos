@@ -130,6 +130,7 @@ dev.new(width=5,height=8,noRStudioGD = TRUE,unit="in")
 plot(sil)
 ```
 
+
 #### Aplicacion de Naive Bayes (Divorcios por dia por mes)
 ``` {r echo=FALSE}
 library(e1071)
@@ -157,6 +158,7 @@ prediccionCaretMes <- predict(modeloCaretMes,newdata = testMes[,1:31])
 caret::confusionMatrix(prediccionCaretMes,testMes$Categoria)
 ```
 
+
 #### Aplicacion de Naive Bayes (Divorcios por departamento por mes)
 ``` {r echo=FALSE}
 divorciosDFdepar1 <- divorciosDFdepar[,3:25]
@@ -179,6 +181,7 @@ modeloCaretDepar <- train(Categoria~.,data=trainDepar,method="nb",trControl = ct
 prediccionCaretDepar <- predict(modeloCaretDepar,newdata = testDepar[,1:22])
 caret::confusionMatrix(prediccionCaretDepar,testDepar$Categoria)
 ```
+
 
 #### Aplicacion de Arboles de Decision (Divorcios por dia por mes)
 ```{r echo=FALSE}
@@ -216,6 +219,7 @@ cfmRandomForest <- confusionMatrix(testCompleto$predRF, testCompleto$Categoria)
 cfmRandomForest
 ```
 
+
 #### Aplicacion de Arboles de Decision (Divorcios por departamento por mes)
 ```{r echo=FALSE}
 corteDepar <- sample(nrow(divorciosDFdepar1),nrow(divorciosDFdepar1)*porcentaje)
@@ -241,8 +245,10 @@ View(testDepar)
 #columnaMasAlta<-apply(prediccion, 1, function(x) colnames(prediccion)[which.max(x)])
 #test$prediccion<-columnaMasAlta #Se le aÃ±ade al grupo de prueba el valor de la predicciÃ³n
 
+
 cfm <- confusionMatrix(as.factor(testDepar$prediccion),testDepar$Categoria)
 cfm
+
 
 modeloRF1 <- randomForest(Categoria~.,data=trainDepar)
 prediccionRF1 <- predict(modeloRF1,newdata = testDepar[,1:22])
@@ -252,15 +258,17 @@ cfmRandomForest <- confusionMatrix(testCompleto$predRF, testCompleto$Categoria)
 cfmRandomForest
 ```
 
-
-
 ### 2. Conjuntos de entrenamiento y prueba
+
 
 ### 3. Algoritmos utilizados
 
+
 ### 4. Resultados
 
+
 #### 4.1 Predicción 
+ 
  
 #### 4.2 Matrices de confusión
 
