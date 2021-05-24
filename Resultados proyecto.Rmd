@@ -39,7 +39,6 @@ load("dataframe.RData")
 ```
 
 ```{r echo=FALSE}
-divorciosDFmes <- divorcios_anio_mes_dia
 divorciosDFdepar <- divorcios_anio_mes_departamento
 ```
 
@@ -51,21 +50,6 @@ Para poder llegar más a fondo sobre las causas de divorcio en Guatemala y bajo 
 
 Para poder estudiar categóricamente, se agregará una variable adicional clasificativa en el dataset para llevar a cabo la predicción. En este caso, se separó en dos grupos, hombres mayores de 25 y menores de 25.
 
-
-#### Grafica de codos de divorcio por dia por mes
-``` {r echo=FALSE}
-datosMes <- select(divorciosDFmes,Total,X01,X02,X03,X04,X05,X06,X07,X08,X09,X10,
-                X11,X12,X13,X14,X15,X16,X17,X18,X19,X20,X21,X22,X23,X24,X25,X26,X27,X28,X29,X30,X31)
-
-scaledDataMes <- as.matrix(scale(datosMes))
-k.max  <- 15
-wssMes <- sapply(1:k.max, 
-              function(k){kmeans(datosMes,k,iter.max = 100 )$tot.withinss})
-plot(1:k.max,wssMes,
-        type="b",
-        xlab="No. clusters",
-        ylab="No. Suma de cuadrados")
-```
 
 #### Grafica de codos de divorcios por departamento por mes
 ``` {r echo=FALSE}
@@ -84,11 +68,6 @@ plot(1:k.max,wssDepar,
         ylab="No. Suma de cuadrados")
 ```
 
-#### Numero de Clusters (Divorcios por dia por mes)
-``` {r echo=FALSE}
-kmMes<-kmeans(scaledDataMes, 3, iter.max = 100)
-fviz_cluster(kmMes, data = scaledDataMes, frame.type = "convex")
-```
 
 #### Numero de Clusters (Divorcios por departamento por mes)
 ``` {r echo=FALSE}
@@ -98,14 +77,6 @@ fviz_cluster(kmDepar, data = scaledDataDepar, frame.type = "convex")
 
 #### Aplicacion de clusters a Data Inicial y Separacion de grupos
 ``` {r echo=FALSE}
-set.seed(123)
-divorciosDFmes$Categoria <- kmMes$cluster
-groupOne <- divorciosDFmes[divorciosDFmes$Categoria == "Baja",]
-groupTwo <- divorciosDFmes[divorciosDFmes$Categoria == "Media",]
-groupThree <- divorciosDFmes[divorciosDFmes$Categoria == "Alta",]
-```
-
-``` {r echo=FALSE}
 set.seed(314)
 divorciosDFdepar$Categoria <- kmDepar$cluster
 
@@ -114,13 +85,6 @@ groupTwo <- divorciosDFdepar[divorciosDFdepar$Categoria == "Media",]
 groupThree <- divorciosDFdepar[divorciosDFdepar$Categoria == "Alta",]
 ```
 
-#### Grafica de Silueta (Divorcios por dia por mes)
-``` {r echo=FALSE}
-dis = dist(scaledDataMes)^2
-sil = silhouette(kmMes$cluster,dis)
-dev.new(width=5,height=8,noRStudioGD = TRUE,unit="in")
-plot(sil)
-```
 
 #### Grafica de Silueta (Divorcios por departamento por mes)
 ``` {r echo=FALSE}
@@ -130,35 +94,10 @@ dev.new(width=5,height=8,noRStudioGD = TRUE,unit="in")
 plot(sil)
 ```
 
-#### Aplicacion de Naive Bayes (Divorcios por dia por mes)
-``` {r echo=FALSE}
-library(e1071)
-library(caret)
-
-porcentaje = 0.7
-
-divorciosDFmes1 <- divorciosDFmes[,3:34]
-divorciosDFmes1$Categoria <- ifelse(divorciosDFmes1$Categoria == 1, "Baja", ifelse(divorciosDFmes1$Categoria == 2, "Media", ifelse(divorciosDFmes1$Categoria == 3, "Alta", 0)))
-
-divorciosDFmes1$Categoria <- factor(divorciosDFmes1$Categoria)                              
-
-corteMes <- sample(nrow(divorciosDFmes1),nrow(divorciosDFmes1)*porcentaje)
-trainMes<-divorciosDFmes1[corteMes,]
-testMes<-divorciosDFmes1[-corteMes,]
-
-modeloMes<-naiveBayes(trainMes$Categoria~.,data=trainMes)
-predBayesMes<-predict(modeloMes, newdata = testMes[,1:31])
-
-cmMes <- caret::confusionMatrix(predBayesMes, testMes$Categoria)
-
-ctMes <- trainControl(method = "cv",trainMes[,1:31],number=10, verboseIter=T)
-modeloCaretMes <- train(Categoria~.,data=trainMes,method="nb",trControl = ctMes)
-prediccionCaretMes <- predict(modeloCaretMes,newdata = testMes[,1:31])
-caret::confusionMatrix(prediccionCaretMes,testMes$Categoria)
-```
-
 #### Aplicacion de Naive Bayes (Divorcios por departamento por mes)
 ``` {r echo=FALSE}
+porcentaje <- 0.7
+
 divorciosDFdepar1 <- divorciosDFdepar[,3:25]
 divorciosDFdepar1$Categoria <- ifelse(divorciosDFdepar1$Categoria == 1, "Baja", ifelse(divorciosDFdepar1$Categoria == 2, "Media", ifelse(divorciosDFdepar1$Categoria == 3, "Alta", 0)))
 
@@ -178,42 +117,6 @@ ctDepar <- trainControl(method = "cv",trainDepar[,1:22],number=10, verboseIter=T
 modeloCaretDepar <- train(Categoria~.,data=trainDepar,method="nb",trControl = ctDepar)
 prediccionCaretDepar <- predict(modeloCaretDepar,newdata = testDepar[,1:22])
 caret::confusionMatrix(prediccionCaretDepar,testDepar$Categoria)
-```
-
-#### Aplicacion de Arboles de Decision (Divorcios por dia por mes)
-```{r echo=FALSE}
-corteMes <- sample(nrow(divorciosDFmes1),nrow(divorciosDFmes1)*porcentaje)
-trainMes<-divorciosDFmes1[corteMes,]
-testMes<-divorciosDFmes1[-corteMes,]
-
-arbolModeloMes <- rpart(Categoria~., divorciosDFmes1, method = "class")
-rpart.plot(arbolModeloMes)
-
-#arbolModelo<-rpart(Species~.,datos,method = "class")
-#rpart.plot(arbolModelo)
-
-View(testMes)
-prediccion <- predict(arbolModeloMes, newdata = testMes[,1:31])
-
-#prediccion <- predict(dt_model, newdata = test[1:4])
-
-columnaMasAlta <- apply(prediccion, 1, function(x) colnames(prediccion)[which.max(x)])
-columnaMasAlta
-testMes$prediccion <- columnaMasAlta
-View(testMes)
-#Apply: Para cada fila, determina el nombre de la columna del valor mÃ¡ximo entre los tres valores de una fila
-#columnaMasAlta<-apply(prediccion, 1, function(x) colnames(prediccion)[which.max(x)])
-#test$prediccion<-columnaMasAlta #Se le aÃ±ade al grupo de prueba el valor de la predicciÃ³n
-
-cfm <- confusionMatrix(as.factor(testMes$prediccion),testMes$Categoria)
-cfm
-
-modeloRF1 <- randomForest(Categoria~.,data=trainMes)
-prediccionRF1 <- predict(modeloRF1,newdata = testMes[,1:31])
-testCompleto<-testMes
-testCompleto$predRF<-prediccionRF1
-cfmRandomForest <- confusionMatrix(testCompleto$predRF, testCompleto$Categoria)
-cfmRandomForest
 ```
 
 #### Aplicacion de Arboles de Decision (Divorcios por departamento por mes)
