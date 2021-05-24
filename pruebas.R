@@ -15,40 +15,40 @@ dt2017 <- excel_sheets("DATOS/Divorcios2017.xlsx") %>% map(~read_xlsx("DATOS/Div
 dt2018 <- excel_sheets("DATOS/Divorcios2018.xlsx") %>% map(~read_xlsx("DATOS/Divorcios2018.xlsx", .))
 dt2019 <- excel_sheets("DATOS/Divorcios2019.xlsx") %>% map(~read_xlsx("DATOS/Divorcios2019.xlsx", .))
 
-#Divorcios por grupos de edad del esposo, según grupos de edad de la esposa al momento de la sentencia
+#Divorcios por grupos de edad del esposo, segÃºn grupos de edad de la esposa al momento de la sentencia
 
 grupo_edad_esposo_segun_grupo_edad_esposa_2009 <- as.data.frame(dt2009[2])
-grupo_edad_esposo_segun_grupo_edad_esposa_2009$año = 2009
+grupo_edad_esposo_segun_grupo_edad_esposa_2009$aÃ±o = 2009
 
 grupo_edad_esposo_segun_grupo_edad_esposa_2010 <- as.data.frame(dt2010[3])
-grupo_edad_esposo_segun_grupo_edad_esposa_2010$año = 2010
+grupo_edad_esposo_segun_grupo_edad_esposa_2010$aÃ±o = 2010
 
 grupo_edad_esposo_segun_grupo_edad_esposa_2011 <- as.data.frame(dt2011[2])
-grupo_edad_esposo_segun_grupo_edad_esposa_2011$año = 2011
+grupo_edad_esposo_segun_grupo_edad_esposa_2011$aÃ±o = 2011
 
 grupo_edad_esposo_segun_grupo_edad_esposa_2012 <- as.data.frame(dt2012[2])
-grupo_edad_esposo_segun_grupo_edad_esposa_2012$año = 2012
+grupo_edad_esposo_segun_grupo_edad_esposa_2012$aÃ±o = 2012
 
 grupo_edad_esposo_segun_grupo_edad_esposa_2013 <- as.data.frame(dt2013[2])
-grupo_edad_esposo_segun_grupo_edad_esposa_2013$año = 2013
+grupo_edad_esposo_segun_grupo_edad_esposa_2013$aÃ±o = 2013
 
 grupo_edad_esposo_segun_grupo_edad_esposa_2014 <- as.data.frame(dt2014[2])
-grupo_edad_esposo_segun_grupo_edad_esposa_2014$año = 2014
+grupo_edad_esposo_segun_grupo_edad_esposa_2014$aÃ±o = 2014
 
 grupo_edad_esposo_segun_grupo_edad_esposa_2015 <- as.data.frame(dt2015[2])
-grupo_edad_esposo_segun_grupo_edad_esposa_2015$año = 2015
+grupo_edad_esposo_segun_grupo_edad_esposa_2015$aÃ±o = 2015
 
 grupo_edad_esposo_segun_grupo_edad_esposa_2016 <- as.data.frame(dt2016[2])
-grupo_edad_esposo_segun_grupo_edad_esposa_2016$año = 2016
+grupo_edad_esposo_segun_grupo_edad_esposa_2016$aÃ±o = 2016
 
 grupo_edad_esposo_segun_grupo_edad_esposa_2017 <- as.data.frame(dt2017[2])
-grupo_edad_esposo_segun_grupo_edad_esposa_2017$año = 2017
+grupo_edad_esposo_segun_grupo_edad_esposa_2017$aÃ±o = 2017
 
 grupo_edad_esposo_segun_grupo_edad_esposa_2018 <- as.data.frame(dt2018[2])
-grupo_edad_esposo_segun_grupo_edad_esposa_2018$año = 2018
+grupo_edad_esposo_segun_grupo_edad_esposa_2018$aÃ±o = 2018
 
 grupo_edad_esposo_segun_grupo_edad_esposa_2019 <- as.data.frame(dt2019[2])
-grupo_edad_esposo_segun_grupo_edad_esposa_2019$año = 2019
+grupo_edad_esposo_segun_grupo_edad_esposa_2019$aÃ±o = 2019
 
 grupo_edad_esposo_segun_grupo_edad_esposa <- rbind(grupo_edad_esposo_segun_grupo_edad_esposa_2009,
                                                               grupo_edad_esposo_segun_grupo_edad_esposa_2010,
@@ -65,37 +65,37 @@ grupo_edad_esposo_segun_grupo_edad_esposa <- rbind(grupo_edad_esposo_segun_grupo
 # Divorcios por mes de registro segun departamento de registro
 
 mes_registro_segun_departamento_registro_2009 <- as.data.frame(dt2009[4])
-mes_registro_segun_departamento_registro_2009$año = 2009
+mes_registro_segun_departamento_registro_2009$aÃ±o = 2009
 
 mes_registro_segun_departamento_registro_2010 <- as.data.frame(dt2010[5])
-mes_registro_segun_departamento_registro_2010$año = 2010
+mes_registro_segun_departamento_registro_2010$aÃ±o = 2010
 
 mes_registro_segun_departamento_registro_2011 <- as.data.frame(dt2011[4])
-mes_registro_segun_departamento_registro_2011$año = 2011
+mes_registro_segun_departamento_registro_2011$aÃ±o = 2011
 
 mes_registro_segun_departamento_registro_2012 <- as.data.frame(dt2012[4])
-mes_registro_segun_departamento_registro_2012$año = 2012
+mes_registro_segun_departamento_registro_2012$aÃ±o = 2012
 
 mes_registro_segun_departamento_registro_2013 <- as.data.frame(dt2013[4])
-mes_registro_segun_departamento_registro_2013$año = 2013
+mes_registro_segun_departamento_registro_2013$aÃ±o = 2013
 
 mes_registro_segun_departamento_registro_2014 <- as.data.frame(dt2014[4])
-mes_registro_segun_departamento_registro_2014$año = 2014
+mes_registro_segun_departamento_registro_2014$aÃ±o = 2014
 
 mes_registro_segun_departamento_registro_2015 <- as.data.frame(dt2015[4])
-mes_registro_segun_departamento_registro_2015$año = 2015
+mes_registro_segun_departamento_registro_2015$aÃ±o = 2015
 
 mes_registro_segun_departamento_registro_2016 <- as.data.frame(dt2016[4])
-mes_registro_segun_departamento_registro_2016$año = 2016
+mes_registro_segun_departamento_registro_2016$aÃ±o = 2016
 
 mes_registro_segun_departamento_registro_2017 <- as.data.frame(dt2017[4])
-mes_registro_segun_departamento_registro_2017$año = 2017
+mes_registro_segun_departamento_registro_2017$aÃ±o = 2017
 
 mes_registro_segun_departamento_registro_2018 <- as.data.frame(dt2018[4])
-mes_registro_segun_departamento_registro_2018$año = 2018
+mes_registro_segun_departamento_registro_2018$aÃ±o = 2018
 
 mes_registro_segun_departamento_registro_2019 <- as.data.frame(dt2019[4])
-mes_registro_segun_departamento_registro_2019$año = 2019
+mes_registro_segun_departamento_registro_2019$aÃ±o = 2019
 
 mes_registro_segun_departamento_registro <- rbind(mes_registro_segun_departamento_registro_2009,
                                                   mes_registro_segun_departamento_registro_2010,
@@ -108,8 +108,6 @@ mes_registro_segun_departamento_registro <- rbind(mes_registro_segun_departament
                                                   mes_registro_segun_departamento_registro_2017,
                                                   mes_registro_segun_departamento_registro_2018,
                                                   mes_registro_segun_departamento_registro_2019)
-
-
 
 save(grupo_edad_esposo_segun_grupo_edad_esposa,
      mes_registro_segun_departamento_registro,
