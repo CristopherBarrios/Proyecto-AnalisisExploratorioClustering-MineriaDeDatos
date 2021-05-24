@@ -94,38 +94,6 @@ dev.new(width=5,height=8,noRStudioGD = TRUE,unit="in")
 plot(sil)
 ```
 
-<<<<<<< HEAD
-=======
-
-#### Aplicacion de Naive Bayes (Divorcios por dia por mes)
-``` {r echo=FALSE}
-library(e1071)
-library(caret)
-
-porcentaje = 0.7
-
-divorciosDFmes1 <- divorciosDFmes[,3:34]
-divorciosDFmes1$Categoria <- ifelse(divorciosDFmes1$Categoria == 1, "Baja", ifelse(divorciosDFmes1$Categoria == 2, "Media", ifelse(divorciosDFmes1$Categoria == 3, "Alta", 0)))
-
-divorciosDFmes1$Categoria <- factor(divorciosDFmes1$Categoria)                              
-
-corteMes <- sample(nrow(divorciosDFmes1),nrow(divorciosDFmes1)*porcentaje)
-trainMes<-divorciosDFmes1[corteMes,]
-testMes<-divorciosDFmes1[-corteMes,]
-
-modeloMes<-naiveBayes(trainMes$Categoria~.,data=trainMes)
-predBayesMes<-predict(modeloMes, newdata = testMes[,1:31])
-
-cmMes <- caret::confusionMatrix(predBayesMes, testMes$Categoria)
-
-ctMes <- trainControl(method = "cv",trainMes[,1:31],number=10, verboseIter=T)
-modeloCaretMes <- train(Categoria~.,data=trainMes,method="nb",trControl = ctMes)
-prediccionCaretMes <- predict(modeloCaretMes,newdata = testMes[,1:31])
-caret::confusionMatrix(prediccionCaretMes,testMes$Categoria)
-```
-
-
->>>>>>> 23c3d344a2746f97741c0a1a6f4fff260b7bc418
 #### Aplicacion de Naive Bayes (Divorcios por departamento por mes)
 ``` {r echo=FALSE}
 porcentaje <- 0.7
@@ -151,47 +119,6 @@ prediccionCaretDepar <- predict(modeloCaretDepar,newdata = testDepar[,1:22])
 caret::confusionMatrix(prediccionCaretDepar,testDepar$Categoria)
 ```
 
-<<<<<<< HEAD
-=======
-
-#### Aplicacion de Arboles de Decision (Divorcios por dia por mes)
-```{r echo=FALSE}
-corteMes <- sample(nrow(divorciosDFmes1),nrow(divorciosDFmes1)*porcentaje)
-trainMes<-divorciosDFmes1[corteMes,]
-testMes<-divorciosDFmes1[-corteMes,]
-
-arbolModeloMes <- rpart(Categoria~., divorciosDFmes1, method = "class")
-rpart.plot(arbolModeloMes)
-
-#arbolModelo<-rpart(Species~.,datos,method = "class")
-#rpart.plot(arbolModelo)
-
-View(testMes)
-prediccion <- predict(arbolModeloMes, newdata = testMes[,1:31])
-
-#prediccion <- predict(dt_model, newdata = test[1:4])
-
-columnaMasAlta <- apply(prediccion, 1, function(x) colnames(prediccion)[which.max(x)])
-columnaMasAlta
-testMes$prediccion <- columnaMasAlta
-View(testMes)
-#Apply: Para cada fila, determina el nombre de la columna del valor mÃ¡ximo entre los tres valores de una fila
-#columnaMasAlta<-apply(prediccion, 1, function(x) colnames(prediccion)[which.max(x)])
-#test$prediccion<-columnaMasAlta #Se le aÃ±ade al grupo de prueba el valor de la predicciÃ³n
-
-cfm <- confusionMatrix(as.factor(testMes$prediccion),testMes$Categoria)
-cfm
-
-modeloRF1 <- randomForest(Categoria~.,data=trainMes)
-prediccionRF1 <- predict(modeloRF1,newdata = testMes[,1:31])
-testCompleto<-testMes
-testCompleto$predRF<-prediccionRF1
-cfmRandomForest <- confusionMatrix(testCompleto$predRF, testCompleto$Categoria)
-cfmRandomForest
-```
-
-
->>>>>>> 23c3d344a2746f97741c0a1a6f4fff260b7bc418
 #### Aplicacion de Arboles de Decision (Divorcios por departamento por mes)
 ```{r echo=FALSE}
 corteDepar <- sample(nrow(divorciosDFdepar1),nrow(divorciosDFdepar1)*porcentaje)
