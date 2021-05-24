@@ -46,10 +46,17 @@ divorciosDFdepar <- divorcios_anio_mes_departamento
 
 ### 1. Elección de variable respuesta
 
-Para poder llegar más a fondo sobre las causas de divorcio en Guatemala y bajo qué circunstancias se da el divorcio en hombres menores de 25 años. Se decidió utilizar machine learning para poder predecir si dadas ciertas características un hombre menor dd 25 años se divorciará
+Para poder llegar más a fondo sobre las causas de divorcio en Guatemala y en qué departamentos tiene una cantidad más alta de divorcios, se decidió utilizar machine learning para poder predecir si dadas ciertas características la demanda será alta, media o baja.
 
-Para poder estudiar categóricamente, se agregará una variable adicional clasificativa en el dataset para llevar a cabo la predicción. En este caso, se separó en dos grupos, hombres mayores de 25 y menores de 25.
+Para poder estudiar categóricamente, se agregará una variable adicional clasificativa en el dataset para llevar a cabo la predicción. En este caso, se separó en 3 grupos.
 
+### 2. Conjuntos de entrenamiento y prueba
+
+Para este caso, se utilizó del conjunto total de datos, el 70% para entrenamiento y 30% para pruebas, de este modo los datos estarán equilibrados para poder realizar buenas predicciones.
+
+### 3. Algoritmos utilizados
+
+Para poder llegar a la solución de este problema, se aplicarán 3 algoritmos. El primero es de clustering con k-means, este para poder encontrar la cantidad óptima de grupos a utilizar para la variable respuesta categórica. El segundo algoritmo a utilizar es el de Naive Bayes, pues es un algoritmo de clasificación. Este nos brinda la ventaja de que, por su estructura, es muy asertivo, es rápido y también escalable. También se utilizó el algoritmo de Árboles de decisión, pues también clasifican la información de manera que, como resultado, se genere un modelo de en forma de árbol. La ventaja de este algoritmo, es que también puede ser utilizado para predecir datos, ayudándonos a resolver el problema en cuestión. 
 
 #### Grafica de codos de divorcios por departamento por mes
 ``` {r echo=FALSE}
@@ -80,9 +87,9 @@ fviz_cluster(kmDepar, data = scaledDataDepar, frame.type = "convex")
 set.seed(314)
 divorciosDFdepar$Categoria <- kmDepar$cluster
 
-groupOne <- divorciosDFdepar[divorciosDFdepar$Categoria == "Baja",]
-groupTwo <- divorciosDFdepar[divorciosDFdepar$Categoria == "Media",]
-groupThree <- divorciosDFdepar[divorciosDFdepar$Categoria == "Alta",]
+groupOne <- divorciosDFdepar[divorciosDFdepar$Categoria == "Demanda baja",]
+groupTwo <- divorciosDFdepar[divorciosDFdepar$Categoria == "Demanda media",]
+groupThree <- divorciosDFdepar[divorciosDFdepar$Categoria == "Demanda alta",]
 ```
 
 
@@ -91,7 +98,10 @@ groupThree <- divorciosDFdepar[divorciosDFdepar$Categoria == "Alta",]
 dis = dist(scaledDataDepar)^2
 sil = silhouette(kmDepar$cluster,dis)
 dev.new(width=5,height=8,noRStudioGD = TRUE,unit="in")
-plot(sil)
+
+silkm<-silhouette(kmDepar$cluster,dist(divorciosDFdepar[,1:22])^2)
+mean(2*silkm[,3]) #0.55, no es la mejor particiÃ³n pero no estÃ¡ mal
+
 ```
 
 #### Aplicacion de Naive Bayes (Divorcios por departamento por mes)
@@ -99,7 +109,7 @@ plot(sil)
 porcentaje <- 0.7
 
 divorciosDFdepar1 <- divorciosDFdepar[,3:25]
-divorciosDFdepar1$Categoria <- ifelse(divorciosDFdepar1$Categoria == 1, "Baja", ifelse(divorciosDFdepar1$Categoria == 2, "Media", ifelse(divorciosDFdepar1$Categoria == 3, "Alta", 0)))
+divorciosDFdepar1$Categoria <- ifelse(divorciosDFdepar1$Categoria == 1, "Demanda baja", ifelse(divorciosDFdepar1$Categoria == 2, "Demanda media", ifelse(divorciosDFdepar1$Categoria == 3, "Demanda alta", 0)))
 
 divorciosDFdepar1$Categoria <- factor(divorciosDFdepar1$Categoria)                                
 
@@ -157,7 +167,6 @@ cfmRandomForest <- confusionMatrix(testCompleto$predRF, testCompleto$Categoria)
 cfmRandomForest
 ```
 
-### 2. Conjuntos de entrenamiento y prueba
 
 
 ### 3. Algoritmos utilizados
