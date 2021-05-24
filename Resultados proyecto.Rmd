@@ -180,6 +180,79 @@ prediccionCaretDepar <- predict(modeloCaretDepar,newdata = testDepar[,1:22])
 caret::confusionMatrix(prediccionCaretDepar,testDepar$Categoria)
 ```
 
+#### Aplicacion de Arboles de Decision (Divorcios por dia por mes)
+```{r echo=FALSE}
+corteMes <- sample(nrow(divorciosDFmes1),nrow(divorciosDFmes1)*porcentaje)
+trainMes<-divorciosDFmes1[corteMes,]
+testMes<-divorciosDFmes1[-corteMes,]
+
+arbolModeloMes <- rpart(Categoria~., divorciosDFmes1, method = "class")
+rpart.plot(arbolModeloMes)
+
+#arbolModelo<-rpart(Species~.,datos,method = "class")
+#rpart.plot(arbolModelo)
+
+View(testMes)
+prediccion <- predict(arbolModeloMes, newdata = testMes[,1:31])
+
+#prediccion <- predict(dt_model, newdata = test[1:4])
+
+columnaMasAlta <- apply(prediccion, 1, function(x) colnames(prediccion)[which.max(x)])
+columnaMasAlta
+testMes$prediccion <- columnaMasAlta
+View(testMes)
+#Apply: Para cada fila, determina el nombre de la columna del valor mÃ¡ximo entre los tres valores de una fila
+#columnaMasAlta<-apply(prediccion, 1, function(x) colnames(prediccion)[which.max(x)])
+#test$prediccion<-columnaMasAlta #Se le aÃ±ade al grupo de prueba el valor de la predicciÃ³n
+
+cfm <- confusionMatrix(as.factor(testMes$prediccion),testMes$Categoria)
+cfm
+
+modeloRF1 <- randomForest(Categoria~.,data=trainMes)
+prediccionRF1 <- predict(modeloRF1,newdata = testMes[,1:31])
+testCompleto<-testMes
+testCompleto$predRF<-prediccionRF1
+cfmRandomForest <- confusionMatrix(testCompleto$predRF, testCompleto$Categoria)
+cfmRandomForest
+```
+
+#### Aplicacion de Arboles de Decision (Divorcios por departamento por mes)
+```{r echo=FALSE}
+corteDepar <- sample(nrow(divorciosDFdepar1),nrow(divorciosDFdepar1)*porcentaje)
+trainDepar<-divorciosDFdepar1[corteDepar,]
+testDepar<-divorciosDFdepar1[-corteDepar,]
+
+arbolModeloDepar <- rpart(Categoria~., divorciosDFdepar1, method = "class")
+rpart.plot(arbolModeloDepar)
+
+#arbolModelo<-rpart(Species~.,datos,method = "class")
+#rpart.plot(arbolModelo)
+
+View(testDepar)
+prediccion <- predict(arbolModeloDepar, newdata = testDepar[,1:22])
+
+#prediccion <- predict(dt_model, newdata = test[1:4])
+
+columnaMasAlta <- apply(prediccion, 1, function(x) colnames(prediccion)[which.max(x)])
+columnaMasAlta
+testDepar$prediccion <- columnaMasAlta
+View(testDepar)
+#Apply: Para cada fila, determina el nombre de la columna del valor mÃ¡ximo entre los tres valores de una fila
+#columnaMasAlta<-apply(prediccion, 1, function(x) colnames(prediccion)[which.max(x)])
+#test$prediccion<-columnaMasAlta #Se le aÃ±ade al grupo de prueba el valor de la predicciÃ³n
+
+cfm <- confusionMatrix(as.factor(testDepar$prediccion),testDepar$Categoria)
+cfm
+
+modeloRF1 <- randomForest(Categoria~.,data=trainDepar)
+prediccionRF1 <- predict(modeloRF1,newdata = testDepar[,1:22])
+testCompleto<-testDepar
+testCompleto$predRF<-prediccionRF1
+cfmRandomForest <- confusionMatrix(testCompleto$predRF, testCompleto$Categoria)
+cfmRandomForest
+```
+
+
 
 ### 2. Conjuntos de entrenamiento y prueba
 
